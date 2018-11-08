@@ -12,8 +12,8 @@ import {TranslateModule, TranslateService} from "../src/public_api";
 })
 class RootCmp {
   constructor(public translate: TranslateService) {
-    translate.setTranslation('en', {"TEST": "Root"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "Root"});
+    translate.use('en', 'eu');
   }
 }
 
@@ -28,8 +28,8 @@ function getLazyLoadedModule(importedModule: ModuleWithProviders) {
   @Component({selector: 'lazy', template: 'lazy-loaded-child'})
   class ChildLazyLoadedComponent {
     constructor(public translate: TranslateService) {
-      translate.setTranslation('en', {"TEST": "Lazy"});
-      translate.use('en');
+      translate.setTranslation('en', 'eu', {"TEST": "Lazy"});
+      translate.use('en', 'eu');
       expect(translate.instant('TEST')).toEqual('Lazy');
     }
   }

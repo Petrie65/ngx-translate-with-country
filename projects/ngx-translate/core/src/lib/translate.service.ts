@@ -22,8 +22,18 @@ export interface LangChangeEvent {
   translations: any;
 }
 
+export interface CountryChangeEvent {
+  country: string;
+  translations: any;
+}
+
 export interface DefaultLangChangeEvent {
   lang: string;
+  translations: any;
+}
+
+export interface DefaultCountryChangeEvent {
+  country: string;
   translations: any;
 }
 
@@ -39,10 +49,15 @@ export class TranslateService {
   private pending: boolean = false;
   private _onTranslationChange: EventEmitter<TranslationChangeEvent> = new EventEmitter<TranslationChangeEvent>();
   private _onLangChange: EventEmitter<LangChangeEvent> = new EventEmitter<LangChangeEvent>();
+  private _onCountryChange: EventEmitter<CountryChangeEvent> = new EventEmitter<CountryChangeEvent>();
   private _onDefaultLangChange: EventEmitter<DefaultLangChangeEvent> = new EventEmitter<DefaultLangChangeEvent>();
+  private _onDefaultCountryChange: EventEmitter<DefaultCountryChangeEvent> = new EventEmitter<DefaultCountryChangeEvent>();
   private _defaultLang: string;
+  private _defaultCountry: string;
   private _currentLang: string;
+  private _currentCountry: string;
   private _langs: Array<string> = [];
+  private _countries: Array<string> = [];
   private _translations: any = {};
   private _translationRequests: any = {};
 
@@ -75,6 +90,26 @@ export class TranslateService {
   get onDefaultLangChange() {
     return this.isolate ? this._onDefaultLangChange : this.store.onDefaultLangChange;
   }
+  /**
+   * 
+   * An EventEmitter to listen to country change events
+   * onLangChange.subscribe((params: LangChangeEvent) => {
+     *     // do something
+     * });
+   */
+  get onCountryChange(): EventEmitter<CountryChangeEvent> {
+    return this.isolate ? this._onCountryChange : this.store.onCountryChange;
+  }
+
+  /**
+   * An EventEmitter to listen to default lang change events
+   * onDefaultLangChange.subscribe((params: DefaultLangChangeEvent) => {
+     *     // do something
+     * });
+   */
+  get onDefaultCountryChange() {
+    return this.isolate ? this._onDefaultCountryChange : this.store.onDefaultCountryChange;
+  }
 
   /**
    * The default lang to fallback when translations are missing on the current lang
@@ -88,6 +123,22 @@ export class TranslateService {
       this._defaultLang = defaultLang;
     } else {
       this.store.defaultLang = defaultLang;
+    }
+  }
+
+  /**
+   * The default country to fallback when translations are missing on the current country
+   */
+  
+  get defaultCountry(): string {
+    return this.isolate ? this._defaultCountry : this.store.defaultCountry;
+  }
+
+  set defaultCountry(defaultCountry: string) {
+    if (this.isolate) {
+      this._defaultCountry = defaultCountry;
+    } else {
+      this.store.defaultCountry = defaultCountry;
     }
   }
 
@@ -107,6 +158,21 @@ export class TranslateService {
   }
 
   /**
+   * The country currently used
+   */
+  get currentCountry(): string {
+    return this.isolate ? this._currentCountry : this.store.currentCountry;
+  }
+
+  set currentCountry(currentCountry: string) {
+    if (this.isolate) {
+      this._currentCountry = currentCountry;
+    } else {
+      this.store.currentCountry = currentCountry;
+    }
+  }
+
+  /**
    * an array of langs
    */
   get langs(): string[] {
@@ -118,6 +184,21 @@ export class TranslateService {
       this._langs = langs;
     } else {
       this.store.langs = langs;
+    }
+  }
+
+  /**
+   * an array of langs
+   */
+  get countries(): string[] {
+    return this.isolate ? this._countries : this.store.countries;
+  }
+
+  set countries(countries: string[]) {
+    if (this.isolate) {
+      this._countries = countries;
+    } else {
+      this.store.countries = countries;
     }
   }
 
@@ -158,12 +239,12 @@ export class TranslateService {
   /**
    * Sets the default language to use as a fallback
    */
-  public setDefaultLang(lang: string): void {
+  public setDefaultLang(lang: string, country: string): void {
     if (lang === this.defaultLang) {
       return;
     }
 
-    let pending: Observable<any> = this.retrieveTranslations(lang);
+    let pending: Observable<any> = this.retrieveTranslations(lang, country);
 
     if (typeof pending !== "undefined") {
       // on init set the defaultLang immediately
@@ -171,12 +252,16 @@ export class TranslateService {
         this.defaultLang = lang;
       }
 
+      if (!this.defaultCountry) {
+        this.defaultCountry = country;
+      }
+
       pending.pipe(take(1))
         .subscribe((res: any) => {
-          this.changeDefaultLang(lang);
+          this.changeDefaultLang(lang, country);
         });
     } else { // we already have this language
-      this.changeDefaultLang(lang);
+      this.changeDefaultLang(lang, country);
     }
   }
 
@@ -190,13 +275,13 @@ export class TranslateService {
   /**
    * Changes the lang currently used
    */
-  public use(lang: string): Observable<any> {
+  public use(lang: string, country: string): Observable<any> {
     // don't change the language if the language given is already selected
     if (lang === this.currentLang) {
       return of(this.translations[lang]);
     }
 
-    let pending: Observable<any> = this.retrieveTranslations(lang);
+    let pending: Observable<any> = this.retrieveTranslations(lang, country);
 
     if (typeof pending !== "undefined") {
       // on init set the currentLang immediately
@@ -206,12 +291,12 @@ export class TranslateService {
 
       pending.pipe(take(1))
         .subscribe((res: any) => {
-          this.changeLang(lang);
+          this.changeLang(lang, country);
         });
 
       return pending;
     } else { // we have this language, return an Observable
-      this.changeLang(lang);
+      this.changeLang(lang, country);
 
       return of(this.translations[lang]);
     }
@@ -220,12 +305,12 @@ export class TranslateService {
   /**
    * Retrieves the given translations
    */
-  private retrieveTranslations(lang: string): Observable<any> {
+  private retrieveTranslations(lang: string, country: string): Observable<any> {
     let pending: Observable<any>;
 
     // if this language is unavailable, ask for it
     if (typeof this.translations[lang] === "undefined") {
-      this._translationRequests[lang] = this._translationRequests[lang] || this.getTranslation(lang);
+      this._translationRequests[lang] = this._translationRequests[lang] || this.getTranslation(lang, country);
       pending = this._translationRequests[lang];
     }
 
@@ -236,13 +321,13 @@ export class TranslateService {
    * Gets an object of translations for a given language with the current loader
    * and passes it through the compiler
    */
-  public getTranslation(lang: string): Observable<any> {
+  public getTranslation(lang: string, country: string): Observable<any> {
     this.pending = true;
-    this.loadingTranslations = this.currentLoader.getTranslation(lang).pipe(share());
+    this.loadingTranslations = this.currentLoader.getTranslation(lang, country).pipe(share());
 
     this.loadingTranslations.pipe(take(1))
       .subscribe((res: Object) => {
-        this.translations[lang] = this.compiler.compileTranslations(res, lang);
+        this.translations[lang] = this.compiler.compileTranslations(res, lang, country);
         this.updateLangs();
         this.pending = false;
       }, (err: any) => {
@@ -256,8 +341,8 @@ export class TranslateService {
    * Manually sets an object of translations for a given language
    * after passing it through the compiler
    */
-  public setTranslation(lang: string, translations: Object, shouldMerge: boolean = false): void {
-    translations = this.compiler.compileTranslations(translations, lang);
+  public setTranslation(lang: string, country: string, translations: Object, shouldMerge: boolean = false): void {
+    translations = this.compiler.compileTranslations(translations, lang, country);
     if (shouldMerge && this.translations[lang]) {
       this.translations[lang] = mergeDeep(this.translations[lang], translations);
     } else {
@@ -369,7 +454,7 @@ export class TranslateService {
           observer.error(err);
         };
         this.loadingTranslations.subscribe((res: any) => {
-          res = this.getParsedResult(this.compiler.compileTranslations(res, this.currentLang), key, interpolateParams);
+          res = this.getParsedResult(this.compiler.compileTranslations(res, this.currentLang, this.currentCountry), key, interpolateParams);
           if (typeof res.subscribe === "function") {
             res.subscribe(onComplete, onError);
           } else {
@@ -438,8 +523,8 @@ export class TranslateService {
   /**
    * Sets the translated value of a key, after compiling it
    */
-  public set(key: string, value: string, lang: string = this.currentLang): void {
-    this.translations[lang][key] = this.compiler.compile(value, lang);
+  public set(key: string, value: string, lang: string = this.currentLang, country: string = this.currentCountry): void {
+    this.translations[lang][key] = this.compiler.compile(value, lang, country);
     this.updateLangs();
     this.onTranslationChange.emit({lang: lang, translations: this.translations[lang]});
   }
@@ -447,30 +532,31 @@ export class TranslateService {
   /**
    * Changes the current lang
    */
-  private changeLang(lang: string): void {
+  private changeLang(lang: string, country: string): void {
     this.currentLang = lang;
     this.onLangChange.emit({lang: lang, translations: this.translations[lang]});
 
     // if there is no default lang, use the one that we just set
     if (!this.defaultLang) {
-      this.changeDefaultLang(lang);
+      this.changeDefaultLang(lang, country);
     }
   }
 
   /**
    * Changes the default lang
    */
-  private changeDefaultLang(lang: string): void {
+  private changeDefaultLang(lang: string, country: string): void {
     this.defaultLang = lang;
+    this.defaultCountry = country;
     this.onDefaultLangChange.emit({lang: lang, translations: this.translations[lang]});
   }
 
   /**
    * Allows to reload the lang file from the file
    */
-  public reloadLang(lang: string): Observable<any> {
+  public reloadLang(lang: string, country: string): Observable<any> {
     this.resetLang(lang);
-    return this.getTranslation(lang);
+    return this.getTranslation(lang, country);
   }
 
   /**

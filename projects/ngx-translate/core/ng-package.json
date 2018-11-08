@@ -1,6 +1,6 @@
 {
   "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../../dist/@ngx-translate/core",
+  "dest": "../../../dist/ngx-translate-with-country",
   "deleteDestPath": false,
   "keepLifecycleScripts": true,
   "lib": {

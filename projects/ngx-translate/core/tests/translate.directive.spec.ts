@@ -55,8 +55,8 @@ describe('TranslateDirective', () => {
   it('should translate a string using the container value', () => {
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'en', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual('This is a test');
   });
@@ -65,8 +65,8 @@ describe('TranslateDirective', () => {
     // replace the content with the key
     expect(fixture.componentInstance.withKey.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withKey.nativeElement.innerHTML).toEqual('This is a test');
   });
@@ -75,8 +75,8 @@ describe('TranslateDirective', () => {
     // replace the content with the key
     expect(fixture.componentInstance.withOtherElements.nativeElement.innerHTML).toEqual('TEST1 <span>Hey</span> TEST2');
 
-    translate.setTranslation('en', {"TEST1": "Awesome", "TEST2": "it works"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST1": "Awesome", "TEST2": "it works"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withOtherElements.nativeElement.innerHTML).toEqual('Awesome <span>Hey</span> it works');
   });
@@ -85,8 +85,8 @@ describe('TranslateDirective', () => {
     // replace the content with the key
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "It is {{value}}"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "It is {{value}}"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('It is ok');
   });
@@ -95,8 +95,8 @@ describe('TranslateDirective', () => {
     // replace the content with the key
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "It is {{value}}"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "It is {{value}}"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('It is ok');
   });
@@ -106,8 +106,8 @@ describe('TranslateDirective', () => {
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('TEST');
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "It is {{value}}"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "It is {{value}}"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('It is ok');
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('It is ok');
@@ -123,15 +123,15 @@ describe('TranslateDirective', () => {
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('TEST');
     expect(fixture.componentInstance.noContent.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.setTranslation('fr', {"TEST": "C'est un test"});
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.setTranslation('fr', 'fr', {"TEST": "C'est un test"});
 
-    translate.use('en');
+    translate.use('en', 'eu');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual('This is a test');
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual('This is a test');
     expect(fixture.componentInstance.noContent.nativeElement.innerHTML).toEqual('This is a test');
 
-    translate.use('fr');
+    translate.use('fr', 'fr');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual("C'est un test");
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual("C'est un test");
     expect(fixture.componentInstance.noContent.nativeElement.innerHTML).toEqual("C'est un test");
@@ -145,15 +145,15 @@ describe('TranslateDirective', () => {
     const en="  This is a test - with spaces ";
     const fr="  C'est un test - pardon, je ne parle pas francais :) ";
 
-    translate.setTranslation('en', {"TEST": en});
-    translate.setTranslation('fr', {"TEST": fr});
+    translate.setTranslation('en', 'eu', {"TEST": en});
+    translate.setTranslation('fr', 'fr', {"TEST": fr});
 
-    translate.use('en');
+    translate.use('en', 'eu');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual(en);
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual(en);
     expect(fixture.componentInstance.noContent.nativeElement.innerHTML).toEqual(en);
 
-    translate.use('fr');
+    translate.use('fr', 'fr');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual(fr);
     expect(fixture.componentInstance.withParams.nativeElement.innerHTML).toEqual(fr);
     expect(fixture.componentInstance.noContent.nativeElement.innerHTML).toEqual(fr);
@@ -162,12 +162,12 @@ describe('TranslateDirective', () => {
   it('should update the DOM when the default lang changes', () => {
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual('TEST');
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.setTranslation('fr', {"TEST": "C'est un test"});
-    translate.setDefaultLang('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.setTranslation('fr', 'fr', {"TEST": "C'est un test"});
+    translate.setDefaultLang('en', 'eu');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual('This is a test');
 
-    translate.setDefaultLang('fr');
+    translate.setDefaultLang('fr', 'fr');
     expect(fixture.componentInstance.noKey.nativeElement.innerHTML).toEqual("C'est un test");
   });
 
@@ -176,8 +176,8 @@ describe('TranslateDirective', () => {
 
     fixture.destroy();
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('TEST');
   });
@@ -187,8 +187,8 @@ describe('TranslateDirective', () => {
 
     fixture.destroy();
 
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.setDefaultLang('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.setDefaultLang('en', 'eu');
 
     expect(fixture.componentInstance.withParamsNoKey.nativeElement.innerHTML).toEqual('TEST');
   });

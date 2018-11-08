@@ -25,7 +25,7 @@ describe('TranslateCompiler', () => {
       });
       translate = TestBed.get(TranslateService);
 
-      translate.use('en');
+      translate.use('en', 'eu');
     });
 
     it('should use the correct compiler', () => {
@@ -41,7 +41,7 @@ describe('TranslateCompiler', () => {
     });
 
     it('should use the compiler on manually adding a translation object', () => {
-      translate.setTranslation('en', {'SET-TRANSLATION': 'A manually added translation'});
+      translate.setTranslation('en', 'eu', {'SET-TRANSLATION': 'A manually added translation'});
       expect(translate.instant('SET-TRANSLATION')).toBe('A manually added translation');
     });
 
@@ -76,7 +76,7 @@ describe('TranslateCompiler', () => {
       });
       translate = TestBed.get(TranslateService);
 
-      translate.use('en');
+      translate.use('en', 'eu');
     });
 
     it('should use the correct compiler', () => {
@@ -92,7 +92,7 @@ describe('TranslateCompiler', () => {
     });
 
     it('should use the compiler on manually adding a translation object', () => {
-      translate.setTranslation('en', {'SET-TRANSLATION': 'A manually added translation'});
+      translate.setTranslation('en', 'eu', {'SET-TRANSLATION': 'A manually added translation'});
       expect(translate.instant('SET-TRANSLATION')).toBe('A manually added translation|compiled');
     });
 

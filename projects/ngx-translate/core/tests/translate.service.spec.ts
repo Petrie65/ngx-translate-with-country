@@ -6,7 +6,7 @@ import {LangChangeEvent, TranslateLoader, TranslateModule, TranslateService, Tra
 let translations: any = {"TEST": "This is a test"};
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<any> {
+  getTranslation(lang: string, country: string): Observable<any> {
     return of(translations);
   }
 }
@@ -38,7 +38,7 @@ describe('TranslateService', () => {
 
   it('should be able to get translations', () => {
     translations = {"TEST": "This is a test", "TEST2": "This is another test"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the backend because we use a static files loader for TranslateService
     translate.get('TEST').subscribe((res: string) => {
@@ -54,7 +54,7 @@ describe('TranslateService', () => {
 
   it('should be able to get an array translations', () => {
     translations = {"TEST": "This is a test", "TEST2": "This is another test2"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the backend because we use a static files loader for TranslateService
     translate.get(['TEST', 'TEST2']).subscribe((res: string) => {
@@ -64,13 +64,13 @@ describe('TranslateService', () => {
 
   it("should fallback to the default language", () => {
     translations = {};
-    translate.use('fr');
+    translate.use('fr', 'fr');
 
     translate.get('TEST').subscribe((res: string) => {
       expect(res).toEqual('TEST');
 
-      translate.setDefaultLang('nl');
-      translate.setTranslation('nl', {"TEST": "Dit is een test"});
+      translate.setDefaultLang('nl', 'nl');
+      translate.setTranslation('nl', 'nl', {"TEST": "Dit is een test"});
 
       translate.get('TEST').subscribe((res2: string) => {
         expect(res2).toEqual('Dit is een test');
@@ -80,8 +80,8 @@ describe('TranslateService', () => {
   });
 
   it("should use the default language by default", () => {
-    translate.setDefaultLang('nl');
-    translate.setTranslation('nl', {"TEST": "Dit is een test"});
+    translate.setDefaultLang('nl', 'nl');
+    translate.setTranslation('nl', 'nl', {"TEST": "Dit is een test"});
 
     translate.get('TEST').subscribe((res: string) => {
       expect(res).toEqual('Dit is een test');
@@ -89,7 +89,7 @@ describe('TranslateService', () => {
   });
 
   it("should return the key when it doesn't find a translation", () => {
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.get('TEST2').subscribe((res: string) => {
       expect(res).toEqual('TEST2');
@@ -103,8 +103,8 @@ describe('TranslateService', () => {
   });
 
   it('should return an empty value', () => {
-    translate.setDefaultLang('en');
-    translate.setTranslation('en', {"TEST": ""});
+    translate.setDefaultLang('en', 'eu');
+    translate.setTranslation('en', 'eu', {"TEST": ""});
 
     translate.get('TEST').subscribe((res: string) => {
       expect(res).toEqual('');
@@ -113,7 +113,7 @@ describe('TranslateService', () => {
 
   it('should be able to get translations with params', () => {
     translations = {"TEST": "This is a test {{param}}"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.get('TEST', {param: 'with param'}).subscribe((res: string) => {
       expect(res).toEqual('This is a test with param');
@@ -123,7 +123,7 @@ describe('TranslateService', () => {
 
   it('should be able to get translations with nested params', () => {
     translations = {"TEST": "This is a test {{param.value}}"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.get('TEST', {param: {value: 'with param'}}).subscribe((res: string) => {
       expect(res).toEqual('This is a test with param');
@@ -132,7 +132,7 @@ describe('TranslateService', () => {
   });
 
   it('should throw if you forget the key', () => {
-    translate.use('en');
+    translate.use('en', 'eu');
 
     expect(() => {
       translate.get(undefined);
@@ -153,7 +153,7 @@ describe('TranslateService', () => {
 
   it('should be able to get translations with nested keys', () => {
     translations = {"TEST": {"TEST": "This is a test"}, "TEST2": {"TEST2": {"TEST2": "This is another test"}}};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.get('TEST.TEST').subscribe((res: string) => {
       expect(res).toEqual('This is a test');
@@ -167,9 +167,9 @@ describe('TranslateService', () => {
 
   it("should merge translations if option shouldMerge is true", (done: Function) => {
     translations = {};
-    translate.setTranslation('en', {"TEST": {"sub1": "value1"}}, true);
-    translate.setTranslation('en', {"TEST": {"sub2": "value2"}}, true);
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": {"sub1": "value1"}}, true);
+    translate.setTranslation('en', 'eu', {"TEST": {"sub2": "value2"}}, true);
+    translate.use('en', 'eu');
 
     translate.get('TEST').subscribe((res: any) => {
       expect(res).toEqual({"sub1": "value1", "sub2": "value2"});
@@ -180,9 +180,9 @@ describe('TranslateService', () => {
 
   it("should merge non-valid JSON translations if option shouldMerge is true", () => {
     translations = {};
-    translate.setTranslation('en', {"TEST": {"sub1": () => "value1"}}, true);
-    translate.setTranslation('en', {"TEST": {"sub2": () => "value2"}}, true);
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": {"sub1": () => "value1"}}, true);
+    translate.setTranslation('en', 'eu', {"TEST": {"sub2": () => "value2"}}, true);
+    translate.use('en', 'eu');
 
     translate.get('TEST.sub1').subscribe((res: string) => {
       expect(res).toEqual('value1');
@@ -194,8 +194,8 @@ describe('TranslateService', () => {
 
   it("shouldn't call the current loader if you set the translation yourself", (done: Function) => {
     translations = {};
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     translate.get('TEST').subscribe((res: string) => {
       expect(res).toEqual('This is a test');
@@ -206,7 +206,7 @@ describe('TranslateService', () => {
 
   it('should be able to stream a translation for the current language', (done: Function) => {
     translations = {"TEST": "This is a test"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.stream('TEST').subscribe((res: string) => {
       expect(res).toEqual('This is a test');
@@ -216,8 +216,8 @@ describe('TranslateService', () => {
 
   it('should be able to stream a translation of an array for the current language', (done: Function) => {
     let tr = {"TEST": "This is a test", "TEST2": "This is a test2"};
-    translate.setTranslation('en', tr);
-    translate.use('en');
+    translate.setTranslation('en', 'eu', tr);
+    translate.use('en', 'eu');
 
     translate.stream(['TEST', 'TEST2']).subscribe((res: any) => {
       expect(res).toEqual(tr);
@@ -227,7 +227,7 @@ describe('TranslateService', () => {
 
   it('should initially return the same value for streaming and non-streaming get', (done: Function) => {
     translations = {"TEST": "This is a test"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     zip(translate.stream('TEST'), translate.get('TEST')).subscribe((value: [string, string]) => {
       const [streamed, nonStreamed] = value;
@@ -239,7 +239,7 @@ describe('TranslateService', () => {
 
   it('should update streaming translations on language change', (done: Function) => {
     translations = {"TEST": "This is a test"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.stream('TEST').pipe(take(3), toArray()).subscribe((res: string[]) => {
       const expected = ['This is a test', 'Dit is een test', 'This is a test'];
@@ -247,16 +247,16 @@ describe('TranslateService', () => {
       done();
     });
 
-    translate.setTranslation('nl', {"TEST": "Dit is een test"});
-    translate.use('nl');
-    translate.use('en');
+    translate.setTranslation('nl', 'nl', {"TEST": "Dit is een test"});
+    translate.use('nl', 'nl');
+    translate.use('en', 'eu');
   });
 
   it('should update streaming translations of an array on language change', (done: Function) => {
     const en = {"TEST": "This is a test", "TEST2": "This is a test2"};
     const nl = {"TEST": "Dit is een test", "TEST2": "Dit is een test2"};
-    translate.setTranslation('en', en);
-    translate.use('en');
+    translate.setTranslation('en', 'eu', en);
+    translate.use('en', 'eu');
 
     translate.stream(['TEST', 'TEST2']).pipe(take(3), toArray()).subscribe((res: any[]) => {
       const expected = [en, nl, en];
@@ -264,14 +264,14 @@ describe('TranslateService', () => {
       done();
     });
 
-    translate.setTranslation('nl', nl);
-    translate.use('nl');
-    translate.use('en');
+    translate.setTranslation('nl', 'nl', nl);
+    translate.use('nl', 'nl');
+    translate.use('en', 'eu');
   });
 
   it('should interpolate the same param into each streamed value', (done: Function) => {
     translations = {"TEST": "This is a test {{param}}"};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     translate.stream('TEST', {param: 'with param'}).pipe(take(3), toArray()).subscribe((res: string[]) => {
       const expected = [
@@ -283,35 +283,35 @@ describe('TranslateService', () => {
       done();
     });
 
-    translate.setTranslation('nl', {"TEST": "Dit is een test {{param}}"});
-    translate.use('nl');
-    translate.use('en');
+    translate.setTranslation('nl', 'nl', {"TEST": "Dit is een test {{param}}"});
+    translate.use('nl', 'nl');
+    translate.use('en', 'eu');
   });
 
   it('should be able to get instant translations', () => {
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     expect(translate.instant('TEST')).toEqual('This is a test');
   });
 
   it('should be able to get instant translations of an array', () => {
     let tr = {"TEST": "This is a test", "TEST2": "This is a test2"};
-    translate.setTranslation('en', tr);
-    translate.use('en');
+    translate.setTranslation('en', 'eu', tr);
+    translate.use('en', 'eu');
 
     expect(translate.instant(['TEST', 'TEST2'])).toEqual(tr);
   });
 
   it('should return the key if instant translations are not available', () => {
-    translate.setTranslation('en', {"TEST": "This is a test"});
-    translate.use('en');
+    translate.setTranslation('en', 'eu', {"TEST": "This is a test"});
+    translate.use('en', 'eu');
 
     expect(translate.instant('TEST2')).toEqual('TEST2');
   });
 
   it('should trigger an event when the translation value changes', () => {
-    translate.setTranslation('en', {});
+    translate.setTranslation('en', 'eu', {});
     translate.onTranslationChange.subscribe((event: TranslationChangeEvent) => {
       expect(event.translations).toBeDefined();
       expect(event.translations["TEST"]).toEqual("This is a test");
@@ -322,16 +322,16 @@ describe('TranslateService', () => {
 
   it('should trigger an event when the lang changes', () => {
     let tr = {"TEST": "This is a test"};
-    translate.setTranslation('en', tr);
+    translate.setTranslation('en', 'eu', tr);
     translate.onLangChange.subscribe((event: LangChangeEvent) => {
       expect(event.lang).toBe('en');
       expect(event.translations).toEqual(tr);
     });
-    translate.use('en');
+    translate.use('en', 'eu');
   });
 
   it('should be able to reset a lang', (done: Function) => {
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the backend because we use a static files loader for TranslateService
     translate.get('TEST').subscribe((res: string) => {
@@ -351,7 +351,7 @@ describe('TranslateService', () => {
 
   it('should be able to reload a lang', () => {
     translations = {};
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the loader
     translate.get('TEST').subscribe((res: string) => {
@@ -360,7 +360,7 @@ describe('TranslateService', () => {
       translations = {"TEST": "This is a test 2"};
 
       // reset the lang as if it was never initiated
-      translate.reloadLang('en').subscribe((res2: string) => {
+      translate.reloadLang('en', 'eu').subscribe((res2: string) => {
         expect(translate.instant('TEST')).toEqual(translations['TEST']);
       });
     });
@@ -374,7 +374,7 @@ describe('TranslateService', () => {
     expect(translate.getLangs()).toEqual(['pl', 'es', 'fr']);
 
     // this will request the translation from the backend because we use a static files loader for TranslateService
-    translate.use('en').subscribe((res: string) => {
+    translate.use('en', 'eu').subscribe((res: string) => {
       expect(translate.getLangs()).toEqual(['pl', 'es', 'fr', 'en']);
       translate.addLangs(['de']);
       expect(translate.getLangs()).toEqual(['pl', 'es', 'fr', 'en', 'de']);
@@ -399,8 +399,8 @@ describe('TranslateService', () => {
       getTranslationCalls += 1;
       return timer(1000).pipe(mapTo(of(translations)));
     });
-    translate.use('en');
-    translate.use('en');
+    translate.use('en', 'eu');
+    translate.use('en', 'eu');
 
     tick(1001);
 

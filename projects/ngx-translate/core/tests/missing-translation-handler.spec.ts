@@ -55,7 +55,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should use the MissingTranslationHandler when the key does not exist', () => {
     prepare(Missing);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     translate.get('nonExistingKey').subscribe((res: string) => {
@@ -67,7 +67,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should propagate interpolation params when the key does not exist', () => {
     prepare(Missing);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
     let interpolateParams = {some: 'params'};
 
@@ -80,7 +80,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should propagate TranslationService params when the key does not exist', () => {
     prepare(Missing);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
     let interpolateParams = {some: 'params'};
 
@@ -98,7 +98,7 @@ describe('MissingTranslationHandler', () => {
     }
 
     prepare(MissingUndef);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     translate.get('nonExistingKey').subscribe((res: string) => {
@@ -109,7 +109,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should not call the MissingTranslationHandler when the key exists', () => {
     prepare(Missing);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     translate.get('TEST').subscribe(() => {
@@ -119,7 +119,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should use the MissingTranslationHandler when the key does not exist & we use instant translation', () => {
     prepare(Missing);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     expect(translate.instant('nonExistingKey')).toEqual('handled');
@@ -128,7 +128,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should wait for the MissingTranslationHandler when it returns an observable & we use get', () => {
     prepare(MissingObs);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     translate.get('nonExistingKey').subscribe((res: string) => {
@@ -145,7 +145,7 @@ describe('MissingTranslationHandler', () => {
     };
 
     prepare(MissingObs);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     translate.get(Object.keys(tr)).subscribe((res: string) => {
@@ -156,7 +156,7 @@ describe('MissingTranslationHandler', () => {
 
   it('should not wait for the MissingTranslationHandler when it returns an observable & we use instant', () => {
     prepare(MissingObs);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     expect(translate.instant('nonExistingKey')).toEqual('nonExistingKey');
@@ -170,7 +170,7 @@ describe('MissingTranslationHandler', () => {
     };
 
     prepare(MissingObs);
-    translate.use('en');
+    translate.use('en', 'eu');
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
 
     expect(translate.instant(Object.keys(tr))).toEqual({
@@ -182,8 +182,8 @@ describe('MissingTranslationHandler', () => {
 
   it('should not return default translation, but missing handler', () => {
     prepare(Missing, false);
-    translate.use('en');
-    translate.use('fake');
+    translate.use('en', 'eu');
+    translate.use('fake', 'fakeCountry');
 
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
     translate.get('TEST').subscribe((res: string) => {
@@ -195,8 +195,8 @@ describe('MissingTranslationHandler', () => {
 
   it('should return default translation', () => {
     prepare(Missing, true);
-    translate.use('en');
-    translate.use('fake');
+    translate.use('en', 'eu');
+    translate.use('fake', 'fakeCountry');
 
     spyOn(missingTranslationHandler, 'handle').and.callThrough();
     translate.get('TEST').subscribe((res: string) => {

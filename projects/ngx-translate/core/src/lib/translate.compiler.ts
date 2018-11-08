@@ -1,9 +1,9 @@
 import {Injectable} from "@angular/core";
 
 export abstract class TranslateCompiler {
-  abstract compile(value: string, lang: string): string | Function;
+  abstract compile(value: string, lang: string, country: string): string | Function;
 
-  abstract compileTranslations(translations: any, lang: string): any;
+  abstract compileTranslations(translations: any, lang: string, country: string): any;
 }
 
 /**
@@ -11,11 +11,11 @@ export abstract class TranslateCompiler {
  */
 @Injectable()
 export class TranslateFakeCompiler extends TranslateCompiler {
-  compile(value: string, lang: string): string | Function {
+  compile(value: string, lang: string, country: string): string | Function {
     return value;
   }
 
-  compileTranslations(translations: any, lang: string): any {
+  compileTranslations(translations: any, lang: string, country: string): any {
     return translations;
   }
 }

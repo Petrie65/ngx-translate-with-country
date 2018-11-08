@@ -5,7 +5,7 @@ import {TranslateLoader, TranslateModule, TranslateService} from "../src/public_
 let translations: any = {"TEST": "This is a test"};
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<any> {
+  getTranslation(lang: string, country: string): Observable<any> {
     return of(translations);
   }
 }
@@ -28,7 +28,7 @@ describe('TranslateLoader', () => {
     expect(translate.currentLoader instanceof FakeLoader).toBeTruthy();
 
     // the lang to use, if the lang isn't available, it will use the current loader to get them
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the backend because we use a static files loader for TranslateService
     translate.get('TEST').subscribe((res: string) => {
@@ -38,7 +38,7 @@ describe('TranslateLoader', () => {
 
   it('should be able to provide any TranslateLoader', () => {
     class CustomLoader implements TranslateLoader {
-      getTranslation(lang: string): Observable<any> {
+      getTranslation(lang: string, country: string): Observable<any> {
         return of({"TEST": "This is also a test"});
       }
     }
@@ -57,7 +57,7 @@ describe('TranslateLoader', () => {
     expect(translate.currentLoader instanceof CustomLoader).toBeTruthy();
 
     // the lang to use, if the lang isn't available, it will use the current loader to get them
-    translate.use('en');
+    translate.use('en', 'eu');
 
     // this will request the translation from the CustomLoader
     translate.get('TEST').subscribe((res: string) => {
