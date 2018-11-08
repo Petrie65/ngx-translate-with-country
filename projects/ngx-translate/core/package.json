@@ -1,7 +1,8 @@
 {
   "name": "ngx-translate-with-country",
   "description": "The internationalization (i18n) library for Angular with Language and Country Support",
-  "author": "Olivier Combe",
+  "author": "Ismet Yavuz",
+  "version": "1.0.1",
   "keywords": [
     "angular",
     "angular 2",
@@ -10,13 +11,13 @@
     "ngx-translate"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/ngx-translate/core",
+  "homepage": "https://github.com/sOoT/ngx-translate-with-country",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ngx-translate/core.git"
+    "url": "git+https://github.com/sOoT/ngx-translate-with-country.git"
   },
   "bugs": {
-    "url": "https://github.com/ngx-translate/core/issues"
+    "url": "https://github.com/sOoT/ngx-translate-with-countryissues"
   },
   "peerDependencies": {
     "@angular/core": ">=7.0.0",

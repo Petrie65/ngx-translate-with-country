@@ -1,7 +1,8 @@
 {
   "name": "ngx-translate-with-country",
   "description": "The internationalization (i18n) library for Angular with Language and Country Support",
-  "private": true,
+  "private": false,
+  "version": "1.0.0",
   "scripts": {
     "build": "ng build",
     "commit": "git-cz",
