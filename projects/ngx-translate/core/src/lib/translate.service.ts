@@ -244,6 +244,10 @@ export class TranslateService {
       return;
     }
 
+    if (country === this.defaultCountry) {
+      return;
+    }
+
     let pending: Observable<any> = this.retrieveTranslations(lang, country);
 
     if (typeof pending !== "undefined") {
